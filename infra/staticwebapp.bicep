@@ -46,19 +46,38 @@ param allowConfigFileUpdates bool = true
 @description('Enterprise-grade edge enabled')
 param enterpriseGradeCdnStatus string = 'Disabled'
 
+// Default tags used when a caller doesn't provide them. Caller-supplied tags will
+// overwrite these defaults when keys conflict.
+var defaultTags = {
+  Environment: 'dev'
+  Owner: 'DevOps'
+}
+
+// Merge defaults with user-supplied tags so minimal input works.
+var mergedTags = union(defaultTags, tags)
+
+@description('Enable optional GitHub integration (will wire repository URL/token into the resource)')
+param enableGitHubIntegration bool = false
+
+@description('Enable basic authentication configuration instructions (note: secrets/tokens are not stored in template outputs)')
+param enableBasicAuth bool = false
+
 // Create the Static Web App resource
 resource staticWebApp 'Microsoft.Web/staticSites@2023-01-01' = {
   name: staticWebAppName
   location: location
-  tags: tags
+  tags: mergedTags
   sku: {
     name: sku
     tier: sku
   }
   properties: {
-    repositoryUrl: repositoryUrl
-    branch: repositoryBranch
-    repositoryToken: repositoryToken
+  // Wire GitHub repository information only when integration is enabled. Empty
+  // values are still accepted by the service but we avoid setting values here
+  // unless explicitly requested.
+  repositoryUrl: (enableGitHubIntegration) ? repositoryUrl : ''
+  branch: (enableGitHubIntegration) ? repositoryBranch : ''
+  repositoryToken: (enableGitHubIntegration) ? repositoryToken : ''
     buildProperties: {
       appLocation: appLocation
       apiLocation: apiLocation
@@ -88,3 +107,6 @@ output repositoryUrl string = staticWebApp.properties.repositoryUrl
 
 // Note: API keys and deployment tokens contain secrets and should be retrieved 
 // separately using Azure CLI: az staticwebapp secrets list --name <app-name>
+
+@description('Indicates whether basic auth guidance/configuration is enabled')
+output basicAuthEnabled bool = enableBasicAuth

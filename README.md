@@ -91,6 +91,18 @@ Edit the parameter file to match your requirements:
 }
 ```
 
+## ✅ Checklist for customizing deployments per client
+
+Before deploying for a new client/environment, make sure to:
+
+- Copy `infra/parameters.json` to a client/environment specific file (e.g. `infra/parameters-contoso-dev.json`).
+- Update `staticWebAppName` to follow naming conventions (e.g. `swa-<client>-<env>`).
+- Set `tags` to include `Environment`, `Client`, `CostCenter`, and `Owner`.
+- If you want Azure to link to your repo and enable GitHub Actions automations, set `enableGitHubIntegration` to `true` and provide a `repositoryUrl` and `repositoryToken` via secure means (do NOT store the token in the parameters file in the repo).
+- Use `-WhatIf` validation first to ensure no unexpected changes.
+
+Important: this repository does not store any secrets (tokens, credentials, or passwords). Store sensitive values securely in GitHub Secrets, Azure Key Vault, or another secret store and reference them at deployment time.
+
 ## 🖥️ Local Deployment
 
 ### Using PowerShell Script

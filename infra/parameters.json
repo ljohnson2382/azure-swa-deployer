@@ -1,15 +1,16 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
+  "_comment": "Sample parameter file. Copy to infra/parameters-<client>-<env>.json and update values before deploying.",
   "parameters": {
     "staticWebAppName": {
-      "value": "swa-contoso-dev"
+      "value": "swa-<client>-<env>"
     },
     "location": {
       "value": "West US 2"
     },
     "repositoryUrl": {
-      "value": "https://github.com/contoso/webapp"
+      "value": "https://github.com/<org>/<repo>"
     },
     "repositoryBranch": {
       "value": "main"
@@ -28,11 +29,11 @@
     },
     "tags": {
       "value": {
-        "Environment": "Development",
-        "Client": "Contoso",
-        "CostCenter": "IT-001",
-        "Owner": "DevOps Team",
-        "Project": "WebApp Migration"
+        "Environment": "dev",
+        "Client": "<client>",
+        "CostCenter": "<cost-center>",
+        "Owner": "<team>",
+        "Project": "<project-name>"
       }
     },
     "allowConfigFileUpdates": {
@@ -40,6 +41,12 @@
     },
     "enterpriseGradeCdnStatus": {
       "value": "Disabled"
+    },
+    "enableGitHubIntegration": {
+      "value": false
+    },
+    "enableBasicAuth": {
+      "value": false
     }
   }
 }

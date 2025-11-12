@@ -52,6 +52,7 @@
 
 [CmdletBinding(DefaultParameterSetName = 'ParameterFile')]
 param(
+    [Alias('parametersFile')]
     [Parameter(ParameterSetName = 'ParameterFile', Mandatory = $true)]
     [ValidateScript({ Test-Path $_ })]
     [string]$ParameterFile,
