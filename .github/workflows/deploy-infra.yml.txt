@@ -1,221 +1,221 @@
-# name: Deploy Azure Static Web App Infrastructure (disabled)
+name: Deploy Azure Static Web App Infrastructure (disabled)
 
 # Note: This repository is NOT intended to deploy to Azure. The deploy job
 # is intentionally disabled to prevent accidental deployments. The workflow
 # remains present only for reference/documentation.
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       environment:
-#         description: 'Environment to deploy to'
-#         required: true
-#         default: 'dev'
-#         type: choice
-#         options:
-#           - dev
-#           - staging
-#           - prod
-#       client:
-#         description: 'Client short name (used to derive resource names)'
-#         required: true
-#         default: 'client'
-#         type: string
-#       parameter_file:
-#         description: 'Parameter file to use (relative to infra/ folder)'
-#         required: false
-#         default: 'parameters.json'
-#       whatif:
-#         description: 'Run in validation mode (what-if)'
-#         required: false
-#         default: false
-#         type: boolean
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      client:
+        description: 'Client short name (used to derive resource names)'
+        required: true
+        default: 'client'
+        type: string
+      parameter_file:
+        description: 'Parameter file to use (relative to infra/ folder)'
+        required: false
+        default: 'parameters.json'
+      whatif:
+        description: 'Run in validation mode (what-if)'
+        required: false
+        default: false
+        type: boolean
 
-# env:
-#   AZURE_CLI_VERSION: '2.50.0'
-#   BICEP_TEMPLATE: 'infra/staticwebapp.bicep'
+env:
+  AZURE_CLI_VERSION: '2.50.0'
+  BICEP_TEMPLATE: 'infra/staticwebapp.bicep'
 
-# jobs:
-#   validate:
-#     name: Validate Infrastructure
-#     runs-on: ubuntu-latest
+jobs:
+  validate:
+    name: Validate Infrastructure
+    runs-on: ubuntu-latest
     
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-#       - name: Azure Login
-#         uses: azure/login@v1
-#         with:
-#           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-#       - name: Validate Bicep template
-#         uses: azure/CLI@v1
-#         with:
-#           azcliversion: ${{ env.AZURE_CLI_VERSION }}
-#           inlineScript: |
-#             echo "Validating Bicep template..."
-#             az bicep build --file ${{ env.BICEP_TEMPLATE }}
-#             echo "✓ Bicep template validation completed"
+      - name: Validate Bicep template
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.AZURE_CLI_VERSION }}
+          inlineScript: |
+            echo "Validating Bicep template..."
+            az bicep build --file ${{ env.BICEP_TEMPLATE }}
+            echo "✓ Bicep template validation completed"
 
-#       - name: Lint Bicep template
-#         uses: azure/CLI@v1
-#         with:
-#           azcliversion: ${{ env.AZURE_CLI_VERSION }}
-#           inlineScript: |
-#             echo "Running Bicep linter..."
-#             az bicep lint --file ${{ env.BICEP_TEMPLATE }}
-#             echo "✓ Bicep linting completed"
+      - name: Lint Bicep template
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.AZURE_CLI_VERSION }}
+          inlineScript: |
+            echo "Running Bicep linter..."
+            az bicep lint --file ${{ env.BICEP_TEMPLATE }}
+            echo "✓ Bicep linting completed"
 
-#   deploy:
-#     name: Deploy Infrastructure
-#     runs-on: ubuntu-latest
-#     needs: validate
-#     # Deploys are disabled for this repository. This ensures the deploy job
-#     # never runs (even if the workflow is manually triggered).
-#     if: false
+  deploy:
+    name: Deploy Infrastructure
+    runs-on: ubuntu-latest
+    needs: validate
+    # Deploys are disabled for this repository. This ensures the deploy job
+    # never runs (even if the workflow is manually triggered).
+    if: false
     
-#     # Use environment protection for production deployments
-#     environment: 
-#       name: ${{ github.event.inputs.environment || 'dev' }}
-#       url: ${{ steps.deploy.outputs.app_url }}
+    # Use environment protection for production deployments
+    environment: 
+      name: ${{ github.event.inputs.environment || 'dev' }}
+      url: ${{ steps.deploy.outputs.app_url }}
 
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-#       - name: Azure Login
-#         uses: azure/login@v1
-#         with:
-#           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-#       - name: Set deployment variables
-#         id: vars
-#         run: |
-#           ENV="${{ github.event.inputs.environment || 'dev' }}"
-#           CLIENT="${{ github.event.inputs.client }}"
-#           PARAM_FILE="${{ github.event.inputs.parameter_file || 'parameters.json' }}"
-#           WHATIF="${{ github.event.inputs.whatif || 'false' }}"
+      - name: Set deployment variables
+        id: vars
+        run: |
+          ENV="${{ github.event.inputs.environment || 'dev' }}"
+          CLIENT="${{ github.event.inputs.client }}"
+          PARAM_FILE="${{ github.event.inputs.parameter_file || 'parameters.json' }}"
+          WHATIF="${{ github.event.inputs.whatif || 'false' }}"
           
-#           echo "environment=${ENV}" >> $GITHUB_OUTPUT
-#           echo "client=${CLIENT}" >> $GITHUB_OUTPUT
-#           echo "parameter_file=${PARAM_FILE}" >> $GITHUB_OUTPUT
-#           echo "whatif=${WHATIF}" >> $GITHUB_OUTPUT
-#           echo "resource_group=rg-${CLIENT}-${ENV}" >> $GITHUB_OUTPUT
-#           echo "deployment_name=swa-deployment-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "client=${CLIENT}" >> $GITHUB_OUTPUT
+          echo "parameter_file=${PARAM_FILE}" >> $GITHUB_OUTPUT
+          echo "whatif=${WHATIF}" >> $GITHUB_OUTPUT
+          echo "resource_group=rg-${CLIENT}-${ENV}" >> $GITHUB_OUTPUT
+          echo "deployment_name=swa-deployment-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
           
-#           echo "Environment: ${ENV}"
-#           echo "Parameter file: ${PARAM_FILE}"
-#           echo "What-if mode: ${WHATIF}"
+          echo "Environment: ${ENV}"
+          echo "Parameter file: ${PARAM_FILE}"
+          echo "What-if mode: ${WHATIF}"
 
-#       - name: Ensure Resource Group exists
-#         uses: azure/CLI@v1
-#         with:
-#           azcliversion: ${{ env.AZURE_CLI_VERSION }}
-#           inlineScript: |
-#             RG_NAME="${{ steps.vars.outputs.resource_group }}"
-#             LOCATION="West US 2"
+      - name: Ensure Resource Group exists
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.AZURE_CLI_VERSION }}
+          inlineScript: |
+            RG_NAME="${{ steps.vars.outputs.resource_group }}"
+            LOCATION="West US 2"
 
-#             echo "Checking if resource group ${RG_NAME} exists..."
+            echo "Checking if resource group ${RG_NAME} exists..."
 
-#             if ! az group show --name "${RG_NAME}" --output none 2>/dev/null; then
-#               echo "Creating resource group: ${RG_NAME}"
-#               az group create \
-#                 --name "${RG_NAME}" \
-#                 --location "${LOCATION}" \
-#                 --tags Environment="${{ steps.vars.outputs.environment }}" \
-#                        CreatedBy="GitHub Actions" \
-#                        Repository="${{ github.repository }}" \
-#                        RunId="${{ github.run_id }}"
-#               echo "✓ Resource group created"
-#             else
-#               echo "✓ Resource group already exists"
-#             fi
+            if ! az group show --name "${RG_NAME}" --output none 2>/dev/null; then
+              echo "Creating resource group: ${RG_NAME}"
+              az group create \
+                --name "${RG_NAME}" \
+                --location "${LOCATION}" \
+                --tags Environment="${{ steps.vars.outputs.environment }}" \
+                       CreatedBy="GitHub Actions" \
+                       Repository="${{ github.repository }}" \
+                       RunId="${{ github.run_id }}"
+              echo "✓ Resource group created"
+            else
+              echo "✓ Resource group already exists"
+            fi
 
-#       - name: Deploy infrastructure
-#         id: deploy
-#         uses: azure/CLI@v1
-#         with:
-#           azcliversion: ${{ env.AZURE_CLI_VERSION }}
-#           inlineScript: |
-#             DEPLOYMENT_ARGS=(
-#               "deployment" "group" "create"
-#               "--resource-group" "${{ steps.vars.outputs.resource_group }}"
-#               "--template-file" "${{ env.BICEP_TEMPLATE }}"
-#               "--parameters" "infra/${{ steps.vars.outputs.parameter_file }}"
-#               "--name" "${{ steps.vars.outputs.deployment_name }}"
-#               "--output" "json"
-#             )
+      - name: Deploy infrastructure
+        id: deploy
+        uses: azure/CLI@v1
+        with:
+          azcliversion: ${{ env.AZURE_CLI_VERSION }}
+          inlineScript: |
+            DEPLOYMENT_ARGS=(
+              "deployment" "group" "create"
+              "--resource-group" "${{ steps.vars.outputs.resource_group }}"
+              "--template-file" "${{ env.BICEP_TEMPLATE }}"
+              "--parameters" "infra/${{ steps.vars.outputs.parameter_file }}"
+              "--name" "${{ steps.vars.outputs.deployment_name }}"
+              "--output" "json"
+            )
 
-#             # Add what-if flag if validation mode
-#             if [[ "${{ steps.vars.outputs.whatif }}" == "true" ]]; then
-#               echo "🔍 Running deployment validation (what-if mode)..."
-#               DEPLOYMENT_ARGS+=("--what-if")
-#             else
-#               echo "🚀 Running deployment..."
-#             fi
+            # Add what-if flag if validation mode
+            if [[ "${{ steps.vars.outputs.whatif }}" == "true" ]]; then
+              echo "🔍 Running deployment validation (what-if mode)..."
+              DEPLOYMENT_ARGS+=("--what-if")
+            else
+              echo "🚀 Running deployment..."
+            fi
 
-#             # Execute deployment
-#             DEPLOYMENT_OUTPUT=$(az "${DEPLOYMENT_ARGS[@]}")
-#             DEPLOYMENT_STATUS=$?
+            # Execute deployment
+            DEPLOYMENT_OUTPUT=$(az "${DEPLOYMENT_ARGS[@]}")
+            DEPLOYMENT_STATUS=$?
 
-#             if [[ $DEPLOYMENT_STATUS -eq 0 ]]; then
-#               if [[ "${{ steps.vars.outputs.whatif }}" == "true" ]]; then
-#                 echo "✅ Validation completed successfully"
-#               else
-#                 echo "✅ Deployment completed successfully"
+            if [[ $DEPLOYMENT_STATUS -eq 0 ]]; then
+              if [[ "${{ steps.vars.outputs.whatif }}" == "true" ]]; then
+                echo "✅ Validation completed successfully"
+              else
+                echo "✅ Deployment completed successfully"
 
-#                 # Extract outputs for production deployments
-#                 DEFAULT_HOSTNAME=$(echo "$DEPLOYMENT_OUTPUT" | jq -r '.properties.outputs.defaultHostname.value // empty')
-#                 SWA_NAME=$(echo "$DEPLOYMENT_OUTPUT" | jq -r '.properties.outputs.staticWebAppName.value // empty')
+                # Extract outputs for production deployments
+                DEFAULT_HOSTNAME=$(echo "$DEPLOYMENT_OUTPUT" | jq -r '.properties.outputs.defaultHostname.value // empty')
+                SWA_NAME=$(echo "$DEPLOYMENT_OUTPUT" | jq -r '.properties.outputs.staticWebAppName.value // empty')
 
-#                 if [[ -n "$DEFAULT_HOSTNAME" ]]; then
-#                   echo "app_url=https://${DEFAULT_HOSTNAME}" >> $GITHUB_OUTPUT
-#                   echo "swa_name=${SWA_NAME}" >> $GITHUB_OUTPUT
+                if [[ -n "$DEFAULT_HOSTNAME" ]]; then
+                  echo "app_url=https://${DEFAULT_HOSTNAME}" >> $GITHUB_OUTPUT
+                  echo "swa_name=${SWA_NAME}" >> $GITHUB_OUTPUT
 
-#                   echo "🌐 Static Web App URL: https://${DEFAULT_HOSTNAME}"
-#                   echo "📝 Static Web App Name: ${SWA_NAME}"
-#                 fi
-#               fi
-#             else
-#               echo "❌ Deployment failed with status: $DEPLOYMENT_STATUS"
-#               echo "$DEPLOYMENT_OUTPUT"
-#               exit $DEPLOYMENT_STATUS
-#             fi
+                  echo "🌐 Static Web App URL: https://${DEFAULT_HOSTNAME}"
+                  echo "📝 Static Web App Name: ${SWA_NAME}"
+                fi
+              fi
+            else
+              echo "❌ Deployment failed with status: $DEPLOYMENT_STATUS"
+              echo "$DEPLOYMENT_OUTPUT"
+              exit $DEPLOYMENT_STATUS
+            fi
 
-#       - name: Add deployment summary
-#         if: success()
-#         run: |
-#           cat >> $GITHUB_STEP_SUMMARY << 'EOF'
-#           ## 🚀 Azure Static Web App Deployment
+      - name: Add deployment summary
+        if: success()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          ## 🚀 Azure Static Web App Deployment
           
-#           | Parameter | Value |
-#           |-----------|-------|
-#           | **Environment** | `${{ steps.vars.outputs.environment }}` |
-#           | **Resource Group** | `${{ steps.vars.outputs.resource_group }}` |
-#           | **Parameter File** | `${{ steps.vars.outputs.parameter_file }}` |
-#           | **Deployment Name** | `${{ steps.vars.outputs.deployment_name }}` |
-#           | **Validation Mode** | `${{ steps.vars.outputs.whatif }}` |
-#           EOF
+          | Parameter | Value |
+          |-----------|-------|
+          | **Environment** | `${{ steps.vars.outputs.environment }}` |
+          | **Resource Group** | `${{ steps.vars.outputs.resource_group }}` |
+          | **Parameter File** | `${{ steps.vars.outputs.parameter_file }}` |
+          | **Deployment Name** | `${{ steps.vars.outputs.deployment_name }}` |
+          | **Validation Mode** | `${{ steps.vars.outputs.whatif }}` |
+          EOF
           
-#           if [[ "${{ steps.vars.outputs.whatif }}" != "true" && -n "${{ steps.deploy.outputs.app_url }}" ]]; then
-#             cat >> $GITHUB_STEP_SUMMARY << 'EOF'
-#           | **App URL** | [${{ steps.deploy.outputs.app_url }}](${{ steps.deploy.outputs.app_url }}) |
-#           | **App Name** | `${{ steps.deploy.outputs.swa_name }}` |
+          if [[ "${{ steps.vars.outputs.whatif }}" != "true" && -n "${{ steps.deploy.outputs.app_url }}" ]]; then
+            cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          | **App URL** | [${{ steps.deploy.outputs.app_url }}](${{ steps.deploy.outputs.app_url }}) |
+          | **App Name** | `${{ steps.deploy.outputs.swa_name }}` |
           
-#           ### 🎉 Deployment Successful!
-#           Your Static Web App is now available at: [${{ steps.deploy.outputs.app_url }}](${{ steps.deploy.outputs.app_url }})
-#           EOF
-#           elif [[ "${{ steps.vars.outputs.whatif }}" == "true" ]]; then
-#             cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          ### 🎉 Deployment Successful!
+          Your Static Web App is now available at: [${{ steps.deploy.outputs.app_url }}](${{ steps.deploy.outputs.app_url }})
+          EOF
+          elif [[ "${{ steps.vars.outputs.whatif }}" == "true" ]]; then
+            cat >> $GITHUB_STEP_SUMMARY << 'EOF'
           
-#           ### ✅ Validation Completed
-#           The deployment validation was successful. No resources were created or modified.
-#           EOF
-#           fi
+          ### ✅ Validation Completed
+          The deployment validation was successful. No resources were created or modified.
+          EOF
+          fi
 
-#       - name: Azure Logout
-#         if: always()
-#         run: |
-#           az logout
-#           az cache purge
-#           az account clear
+      - name: Azure Logout
+        if: always()
+        run: |
+          az logout
+          az cache purge
+          az account clear
