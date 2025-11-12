@@ -1,0 +1,163 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.38.33.27573",
+      "templateHash": "18285929906910227999"
+    }
+  },
+  "parameters": {
+    "staticWebAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Static Web App"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "West US 2",
+      "allowedValues": [
+        "West US 2",
+        "Central US",
+        "East US 2",
+        "West Europe",
+        "East Asia"
+      ],
+      "metadata": {
+        "description": "Location for the Static Web App"
+      }
+    },
+    "repositoryUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Repository URL for the Static Web App"
+      }
+    },
+    "repositoryBranch": {
+      "type": "string",
+      "defaultValue": "main",
+      "metadata": {
+        "description": "Branch name for the repository"
+      }
+    },
+    "repositoryToken": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "GitHub token for repository access (optional)"
+      }
+    },
+    "appLocation": {
+      "type": "string",
+      "defaultValue": "/",
+      "metadata": {
+        "description": "Build configuration for the app"
+      }
+    },
+    "apiLocation": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "API build configuration"
+      }
+    },
+    "outputLocation": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Output location for build artifacts"
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Free",
+      "allowedValues": [
+        "Free",
+        "Standard"
+      ],
+      "metadata": {
+        "description": "SKU for the Static Web App"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Tags to apply to the Static Web App"
+      }
+    },
+    "allowConfigFileUpdates": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable staging environments"
+      }
+    },
+    "enterpriseGradeCdnStatus": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Enterprise-grade edge enabled"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/staticSites",
+      "apiVersion": "2023-01-01",
+      "name": "[parameters('staticWebAppName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('sku')]",
+        "tier": "[parameters('sku')]"
+      },
+      "properties": {
+        "repositoryUrl": "[parameters('repositoryUrl')]",
+        "branch": "[parameters('repositoryBranch')]",
+        "repositoryToken": "[parameters('repositoryToken')]",
+        "buildProperties": {
+          "appLocation": "[parameters('appLocation')]",
+          "apiLocation": "[parameters('apiLocation')]",
+          "outputLocation": "[parameters('outputLocation')]"
+        },
+        "allowConfigFileUpdates": "[parameters('allowConfigFileUpdates')]",
+        "enterpriseGradeCdnStatus": "[parameters('enterpriseGradeCdnStatus')]",
+        "stagingEnvironmentPolicy": "Enabled"
+      }
+    }
+  ],
+  "outputs": {
+    "staticWebAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the created Static Web App"
+      },
+      "value": "[parameters('staticWebAppName')]"
+    },
+    "defaultHostname": {
+      "type": "string",
+      "metadata": {
+        "description": "The default hostname of the Static Web App"
+      },
+      "value": "[reference(resourceId('Microsoft.Web/staticSites', parameters('staticWebAppName')), '2023-01-01').defaultHostname]"
+    },
+    "staticWebAppId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the Static Web App"
+      },
+      "value": "[resourceId('Microsoft.Web/staticSites', parameters('staticWebAppName'))]"
+    },
+    "repositoryUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The repository URL"
+      },
+      "value": "[reference(resourceId('Microsoft.Web/staticSites', parameters('staticWebAppName')), '2023-01-01').repositoryUrl]"
+    }
+  }
+}

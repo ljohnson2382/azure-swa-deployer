@@ -1,0 +1,75 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Validate Bicep Template",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"az bicep build --file infra/staticwebapp.bicep && Write-Host 'Bicep template validation completed successfully' -ForegroundColor Green"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Lint Bicep Template",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"az bicep lint --file infra/staticwebapp.bicep && Write-Host 'Bicep linting completed successfully' -ForegroundColor Green"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Deploy Infrastructure (Dev)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"infra/deploy.ps1",
+				"-ParameterFile",
+				"infra/parameters.json",
+				"-ResourceGroupName",
+				"rg-swa-dev",
+				"-WhatIf"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Deploy Infrastructure (What-If)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"infra/deploy.ps1",
+				"-ParameterFile",
+				"infra/parameters.json",
+				"-ResourceGroupName",
+				"rg-swa-dev",
+				"-WhatIf"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Install/Update Azure CLI",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"if (Get-Command az -ErrorAction SilentlyContinue) { Write-Host 'Azure CLI already installed' -ForegroundColor Green; az upgrade } else { Write-Host 'Installing Azure CLI...' -ForegroundColor Yellow; winget install Microsoft.AzureCLI }"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

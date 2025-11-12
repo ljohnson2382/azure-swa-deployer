@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "staticWebAppName": {
+      "value": "swa-contoso-dev"
+    },
+    "location": {
+      "value": "West US 2"
+    },
+    "repositoryUrl": {
+      "value": "https://github.com/contoso/webapp"
+    },
+    "repositoryBranch": {
+      "value": "main"
+    },
+    "appLocation": {
+      "value": "/"
+    },
+    "apiLocation": {
+      "value": "api"
+    },
+    "outputLocation": {
+      "value": "dist"
+    },
+    "sku": {
+      "value": "Free"
+    },
+    "tags": {
+      "value": {
+        "Environment": "Development",
+        "Client": "Contoso",
+        "CostCenter": "IT-001",
+        "Owner": "DevOps Team",
+        "Project": "WebApp Migration"
+      }
+    },
+    "allowConfigFileUpdates": {
+      "value": true
+    },
+    "enterpriseGradeCdnStatus": {
+      "value": "Disabled"
+    }
+  }
+}

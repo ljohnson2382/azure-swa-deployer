@@ -1,0 +1,6 @@
+# Local Copilot instructions - keep private
+.github/copilot-instructions.md
+
+# Ignore common OS and editor files
+.DS_Store
+Thumbs.db
