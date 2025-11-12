@@ -21,6 +21,11 @@ on:
           - dev
           - staging
           - prod
+      client:
+        description: 'Client short name (used to derive resource names)'
+        required: true
+        default: 'client'
+        type: string
       parameter_file:
         description: 'Parameter file to use (relative to infra/ folder)'
         required: false
@@ -91,13 +96,15 @@ jobs:
         id: vars
         run: |
           ENV="${{ github.event.inputs.environment || 'dev' }}"
+          CLIENT="${{ github.event.inputs.client }}"
           PARAM_FILE="${{ github.event.inputs.parameter_file || 'parameters.json' }}"
           WHATIF="${{ github.event.inputs.whatif || 'false' }}"
           
           echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "client=${CLIENT}" >> $GITHUB_OUTPUT
           echo "parameter_file=${PARAM_FILE}" >> $GITHUB_OUTPUT
           echo "whatif=${WHATIF}" >> $GITHUB_OUTPUT
-          echo "resource_group=rg-swa-${ENV}" >> $GITHUB_OUTPUT
+          echo "resource_group=rg-${CLIENT}-${ENV}" >> $GITHUB_OUTPUT
           echo "deployment_name=swa-deployment-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
           
           echo "Environment: ${ENV}"
@@ -111,9 +118,9 @@ jobs:
           inlineScript: |
             RG_NAME="${{ steps.vars.outputs.resource_group }}"
             LOCATION="West US 2"
-            
+
             echo "Checking if resource group ${RG_NAME} exists..."
-            
+
             if ! az group show --name "${RG_NAME}" --output none 2>/dev/null; then
               echo "Creating resource group: ${RG_NAME}"
               az group create \
@@ -142,7 +149,7 @@ jobs:
               "--name" "${{ steps.vars.outputs.deployment_name }}"
               "--output" "json"
             )
-            
+
             # Add what-if flag if validation mode
             if [[ "${{ steps.vars.outputs.whatif }}" == "true" ]]; then
               echo "🔍 Running deployment validation (what-if mode)..."
@@ -150,25 +157,25 @@ jobs:
             else
               echo "🚀 Running deployment..."
             fi
-            
+
             # Execute deployment
             DEPLOYMENT_OUTPUT=$(az "${DEPLOYMENT_ARGS[@]}")
             DEPLOYMENT_STATUS=$?
-            
+
             if [[ $DEPLOYMENT_STATUS -eq 0 ]]; then
               if [[ "${{ steps.vars.outputs.whatif }}" == "true" ]]; then
                 echo "✅ Validation completed successfully"
               else
                 echo "✅ Deployment completed successfully"
-                
+
                 # Extract outputs for production deployments
                 DEFAULT_HOSTNAME=$(echo "$DEPLOYMENT_OUTPUT" | jq -r '.properties.outputs.defaultHostname.value // empty')
                 SWA_NAME=$(echo "$DEPLOYMENT_OUTPUT" | jq -r '.properties.outputs.staticWebAppName.value // empty')
-                
+
                 if [[ -n "$DEFAULT_HOSTNAME" ]]; then
                   echo "app_url=https://${DEFAULT_HOSTNAME}" >> $GITHUB_OUTPUT
                   echo "swa_name=${SWA_NAME}" >> $GITHUB_OUTPUT
-                  
+
                   echo "🌐 Static Web App URL: https://${DEFAULT_HOSTNAME}"
                   echo "📝 Static Web App Name: ${SWA_NAME}"
                 fi

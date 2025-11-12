@@ -1,5 +1,11 @@
-@description('Name of the Static Web App')
-param staticWebAppName string
+@description('Name of the Static Web App. If empty, will be derived from clientName and environmentName using the convention swa-<client>-<env>')
+param staticWebAppName string = ''
+
+@description('Client short name (used to derive resource names when staticWebAppName is not provided)')
+param clientName string = ''
+
+@description('Environment name (dev, staging, prod). Used to derive resource names when staticWebAppName is not provided')
+param environmentName string = ''
 
 @description('Location for the Static Web App')
 @allowed([
@@ -56,6 +62,10 @@ var defaultTags = {
 // Merge defaults with user-supplied tags so minimal input works.
 var mergedTags = union(defaultTags, tags)
 
+// Derive the effective Static Web App name using the naming convention when
+// the caller does not supply a concrete name.
+var effectiveStaticWebAppName = (empty(staticWebAppName) && !empty(clientName) && !empty(environmentName)) ? 'swa-${clientName}-${environmentName}' : staticWebAppName
+
 @description('Enable optional GitHub integration (will wire repository URL/token into the resource)')
 param enableGitHubIntegration bool = false
 
@@ -64,7 +74,7 @@ param enableBasicAuth bool = false
 
 // Create the Static Web App resource
 resource staticWebApp 'Microsoft.Web/staticSites@2023-01-01' = {
-  name: staticWebAppName
+  name: effectiveStaticWebAppName
   location: location
   tags: mergedTags
   sku: {

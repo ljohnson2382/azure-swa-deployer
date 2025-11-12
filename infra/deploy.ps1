@@ -80,6 +80,14 @@ param(
 
     [string]$TenantId,
 
+    [Parameter(Mandatory = $false)]
+    [Alias('client')]
+    [string]$Client,
+
+    [Parameter(Mandatory = $false)]
+    [Alias('env','environment')]
+    [string]$EnvironmentName,
+
     [switch]$WhatIf,
 
     [switch]$Force
@@ -275,6 +283,23 @@ try {
     
     Test-Prerequisites
     Set-AzureContext
+
+    # If ResourceGroupName isn't provided, derive it from client and environment
+    if (-not $ResourceGroupName) {
+        if ($Client -and $EnvironmentName) {
+            $ResourceGroupName = "rg-$Client-$EnvironmentName"
+            Write-Info "Derived Resource Group: $ResourceGroupName"
+        } else {
+            throw "Either -ResourceGroupName or both -Client and -EnvironmentName must be provided"
+        }
+    }
+
+    # If StaticWebAppName not provided, derive from client/environment
+    if (-not $StaticWebAppName -and $Client -and $EnvironmentName) {
+        $StaticWebAppName = "swa-$Client-$EnvironmentName"
+        Write-Info "Derived Static Web App name: $StaticWebAppName"
+    }
+
     Ensure-ResourceGroup
     
     $deploymentResult = Invoke-Deployment

@@ -125,7 +125,7 @@ Be sure to validate with `-WhatIf` before performing a production deployment.
 
 **Deploy with parameter file:**
 ```powershell
-.\infra\deploy.ps1 -ParameterFile "infra\parameters.json" -ResourceGroupName "rg-swa-dev"
+.\infra\deploy.ps1 -ParameterFile "infra\parameters.json" -ResourceGroupName "rg-<client>-<env>"
 ```
 
 **Deploy with direct parameters:**
@@ -135,18 +135,18 @@ Be sure to validate with `-WhatIf` before performing a production deployment.
 
 **Validation mode (What-if):**
 ```powershell
-.\infra\deploy.ps1 -ParameterFile "infra\parameters.json" -ResourceGroupName "rg-swa-dev" -WhatIf
+.\infra\deploy.ps1 -ParameterFile "infra\parameters.json" -ResourceGroupName "rg-<client>-<env>" -WhatIf
 ```
 
 ### Using Azure CLI Directly
 
 ```bash
-# Create resource group
-az group create --name "rg-swa-dev" --location "West US 2"
+# Create resource group (example)
+az group create --name "rg-<client>-<env>" --location "West US 2"
 
 # Deploy infrastructure
 az deployment group create \
-  --resource-group "rg-swa-dev" \
+  --resource-group "rg-<client>-<env>" \
   --template-file "infra/staticwebapp.bicep" \
   --parameters "infra/parameters.json"
 ```
