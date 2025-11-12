@@ -1,0 +1,30 @@
+name: Auto SOP Changelog
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/SOP/**'
+
+jobs:
+  generate:
+    # Prevent running when the commit/push was made by the actions bot itself
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Make script executable
+        run: |
+          chmod +x ./scripts/update-sop-changelog.sh
+
+      - name: Run changelog generator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          ./scripts/update-sop-changelog.sh
