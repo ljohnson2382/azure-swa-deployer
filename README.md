@@ -32,6 +32,9 @@ Examples:
 Notes:
 - Do NOT hardcode client names inside templates or scripts. Use parameters such as `clientName` and `environmentName` (or placeholders `<client>` and `<env>`) and derive resource names at deployment time.
 - This repository uses placeholders in parameter files and README examples. Copy the sample parameter file and replace `<client>` and `<env>` with real values per-client.
+This repository is a documentation/template repository only and **is not intended to perform deployments to Azure**.
+
+If you previously had an automated deployment workflow, it has been disabled to prevent accidental provisioning. To run deployments intentionally in a different repository or pipeline, copy the Bicep templates and deployment scripts into the target repository and configure secrets there.
 
 ## 🚀 Features
 
