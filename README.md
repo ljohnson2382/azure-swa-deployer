@@ -103,6 +103,22 @@ Before deploying for a new client/environment, make sure to:
 
 Important: this repository does not store any secrets (tokens, credentials, or passwords). Store sensitive values securely in GitHub Secrets, Azure Key Vault, or another secret store and reference them at deployment time.
 
+### 🧩 Customize for a New Client
+
+To deploy for a new client:
+
+- [ ] Duplicate `infra/parameters.json` and rename it (e.g., `parameters-acme.json`)
+- [ ] Update values:
+  - `swaName`: `"swa-acmecorp-prod"`
+  - `repoUrl`: `"https://github.com/acme-corp/website"`
+  - `branch`: `"main"`
+  - `tags`: update `client`, `project`, `owner`, etc.
+- [ ] Run the deployment:
+  - PowerShell: `.\\infra\\deploy.ps1 -parametersFile ./infra/parameters-acme.json`
+  - Or trigger the GitHub Action manually (see the workflow in `.github/workflows/deploy-infra.yml`)
+
+Be sure to validate with `-WhatIf` before performing a production deployment.
+
 ## 🖥️ Local Deployment
 
 ### Using PowerShell Script
