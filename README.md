@@ -17,6 +17,22 @@ azure-swa-deployer/
 └── README.md                  # This file
 ```
 
+## 🏷️ Resource naming convention
+
+Follow this naming convention for all resources in the repo so deployments are consistent and easy to manage:
+
+- Static Web App name: `swa-<client>-<env>`
+- Resource Group name: `rg-<client>-<env>`
+
+Examples:
+- For client `healthyhomes` in production (`prod`):
+  - Static Web App: `swa-healthyhomes-prod`
+  - Resource Group: `rg-healthyhomes-prod`
+
+Notes:
+- Do NOT hardcode client names inside templates or scripts. Use parameters such as `clientName` and `environmentName` (or placeholders `<client>` and `<env>`) and derive resource names at deployment time.
+- This repository uses placeholders in parameter files and README examples. Copy the sample parameter file and replace `<client>` and `<env>` with real values per-client.
+
 ## 🚀 Features
 
 - **Modular Bicep Templates**: Parameterized infrastructure definitions
